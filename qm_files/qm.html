@@ -1,0 +1,85 @@
+
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module qm</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>qm</strong></big></big> (version 0.2)</font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/dickrp/svn/support/python/qm/qm.py">/home/dickrp/svn/support/python/qm/qm.py</a></font></td></tr></table>
+    <p><tt>Quine-McCluskey&nbsp;two-level&nbsp;logic&nbsp;minimization&nbsp;method.<br>
+&nbsp;<br>
+Copyright&nbsp;2008,&nbsp;Robert&nbsp;Dick&nbsp;&lt;dickrp@eecs.umich.edu&gt;&nbsp;with&nbsp;improvements<br>
+from&nbsp;Pat&nbsp;Maupin&nbsp;&lt;pmaupin@gmail.com&gt;.<br>
+&nbsp;<br>
+Routines&nbsp;to&nbsp;compute&nbsp;the&nbsp;optimal&nbsp;sum&nbsp;of&nbsp;products&nbsp;implementation&nbsp;from&nbsp;sets&nbsp;of<br>
+don't-care&nbsp;terms,&nbsp;minterms,&nbsp;and&nbsp;maxterms.<br>
+&nbsp;<br>
+Command-line&nbsp;usage&nbsp;example:<br>
+&nbsp;&nbsp;qm.py&nbsp;-o1,2,5&nbsp;-d0,7<br>
+&nbsp;<br>
+Library&nbsp;usage&nbsp;example:<br>
+&nbsp;&nbsp;import&nbsp;qm<br>
+&nbsp;&nbsp;print&nbsp;qm.<a href="#-qm">qm</a>(ones=[1,&nbsp;2,&nbsp;5],&nbsp;dc=[0,&nbsp;7])<br>
+&nbsp;<br>
+Please&nbsp;see&nbsp;the&nbsp;license&nbsp;file&nbsp;for&nbsp;legal&nbsp;information.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#fffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="math.html">math</a><br>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-active_primes"><strong>active_primes</strong></a>(cubesel, primes)</dt><dd><tt>Return&nbsp;the&nbsp;primes&nbsp;selected&nbsp;by&nbsp;the&nbsp;cube&nbsp;selection&nbsp;integer.</tt></dd></dl>
+ <dl><dt><a name="-b2s"><strong>b2s</strong></a>(i, vars)</dt><dd><tt>Convert&nbsp;from&nbsp;an&nbsp;integer&nbsp;to&nbsp;a&nbsp;binary&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-bitcount"><strong>bitcount</strong></a>(s)</dt><dd><tt>Return&nbsp;the&nbsp;sum&nbsp;of&nbsp;on&nbsp;bits&nbsp;in&nbsp;s.</tt></dd></dl>
+ <dl><dt><a name="-compute_primes"><strong>compute_primes</strong></a>(cubes, vars)</dt><dd><tt>Compute&nbsp;primes&nbsp;for&nbsp;the&nbsp;given&nbsp;set&nbsp;of&nbsp;cubes&nbsp;and&nbsp;variable&nbsp;count.</tt></dd></dl>
+ <dl><dt><a name="-is_cover"><strong>is_cover</strong></a>(prime, one)</dt><dd><tt>Return&nbsp;a&nbsp;bool:&nbsp;Does&nbsp;the&nbsp;prime&nbsp;cover&nbsp;the&nbsp;minterm?</tt></dd></dl>
+ <dl><dt><a name="-is_full_cover"><strong>is_full_cover</strong></a>(all_primes, ones)</dt><dd><tt>Return&nbsp;a&nbsp;bool:&nbsp;Does&nbsp;the&nbsp;set&nbsp;of&nbsp;primes&nbsp;cover&nbsp;all&nbsp;minterms?</tt></dd></dl>
+ <dl><dt><a name="-merge"><strong>merge</strong></a>(i, j)</dt><dd><tt>Return&nbsp;cube&nbsp;merge.&nbsp;&nbsp;'X'&nbsp;is&nbsp;don't-care.&nbsp;&nbsp;'None'&nbsp;if&nbsp;merge&nbsp;impossible.</tt></dd></dl>
+ <dl><dt><a name="-qm"><strong>qm</strong></a>(ones<font color="#909090">=[]</font>, zeros<font color="#909090">=[]</font>, dc<font color="#909090">=[]</font>)</dt><dd><tt>Compute&nbsp;minimal&nbsp;two-level&nbsp;sum-of-products&nbsp;form.<br>
+Arguments&nbsp;are:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ones:&nbsp;iterable&nbsp;of&nbsp;integer&nbsp;minterms<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zeros:&nbsp;iterable&nbsp;of&nbsp;integer&nbsp;maxterms<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dc:&nbsp;iterable&nbsp;of&nbsp;integers&nbsp;specifying&nbsp;don't-care&nbsp;terms<br>
+&nbsp;<br>
+For&nbsp;proper&nbsp;operation,&nbsp;either&nbsp;(or&nbsp;both)&nbsp;the&nbsp;'ones'&nbsp;and&nbsp;'zeros'<br>
+parameters&nbsp;must&nbsp;be&nbsp;specified.&nbsp;&nbsp;If&nbsp;one&nbsp;of&nbsp;these&nbsp;parameters&nbsp;is&nbsp;not<br>
+specified,&nbsp;it&nbsp;will&nbsp;be&nbsp;computed&nbsp;from&nbsp;the&nbsp;combination&nbsp;of&nbsp;the&nbsp;other<br>
+parameter&nbsp;and&nbsp;the&nbsp;optional&nbsp;'dc'&nbsp;parameter.<br>
+&nbsp;<br>
+An&nbsp;assertion&nbsp;error&nbsp;will&nbsp;be&nbsp;raised&nbsp;if&nbsp;any&nbsp;terms&nbsp;are&nbsp;specified<br>
+in&nbsp;more&nbsp;than&nbsp;one&nbsp;argument,&nbsp;or&nbsp;if&nbsp;all&nbsp;three&nbsp;arguments&nbsp;are&nbsp;given<br>
+and&nbsp;not&nbsp;all&nbsp;terms&nbsp;are&nbsp;specified.</tt></dd></dl>
+ <dl><dt><a name="-unate_cover"><strong>unate_cover</strong></a>(primes, ones)</dt><dd><tt>Return&nbsp;the&nbsp;minimal&nbsp;cardinality&nbsp;subset&nbsp;of&nbsp;primes&nbsp;covering&nbsp;all&nbsp;ones.<br>
+&nbsp;<br>
+Exhaustive&nbsp;for&nbsp;now.&nbsp;&nbsp;Feel&nbsp;free&nbsp;to&nbsp;replace&nbsp;this&nbsp;with&nbsp;an&nbsp;efficient&nbsp;unate<br>
+covering&nbsp;problem&nbsp;solver.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__author__</strong> = 'Robert Dick'<br>
+<strong>__author_email__</strong> = 'dickrp@eecs.umich.edu'<br>
+<strong>__version__</strong> = '0.2'</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#7799ee">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Author</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#7799ee"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Robert&nbsp;Dick</td></tr></table>
+</body></html>
