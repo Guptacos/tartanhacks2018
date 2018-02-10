@@ -9,6 +9,8 @@ import os
 
 import requests
 
+import string
+
 #from create_recog import project
 #from create_recog import iteration
 
@@ -59,6 +61,8 @@ def images2Circ(photos):
     cols = 8
     circuit = [[None for i in range(cols)] for j in range(rows)]
     listing = os.listdir(photos)
+    listing.sort()
+    print(listing)
     length = len(listing)
     for i in range(rows):
         for j in range(cols):
@@ -69,6 +73,6 @@ def images2Circ(photos):
             circuit[i][j] = gate
     return circuit
 
-print(images2Circ("Photos/TartanHacks/Test1/"))
+print(images2Circ("Photos/t2/"))
         
         
