@@ -89,9 +89,9 @@ def get_img():
     cam = VideoCapture(1)
     s, img = cam.read()
     if s:
-        namedWindow("cam-test",WINDOW_NORMAL)
-        imshow("cam-test",img)
-        waitKey(0)
+        # namedWindow("cam-test",WINDOW_NORMAL)
+        # imshow("cam-test",img)
+        # waitKey(0)
         #destroyWindow("cam-test")
         imwrite("CVTEST.jpg",img) #save image
 
@@ -105,6 +105,8 @@ def live_feed():
             break
     cap.release()
     destroyAllWindows()
+
+#live_feed()
             
 
 

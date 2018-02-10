@@ -4,6 +4,7 @@ from digital_circuit import *
 import random
 import os
 from imagesHandler import *
+from image_recognition import *
 
 #COLORS
 WHITE = (255, 255, 255)
@@ -484,7 +485,10 @@ def getCircuit():
     return get_circuit(array)
 
 try:
-    game=PygameGame()
-    game.run()
+    A=getCircuit()
+    if A[1]=='':
+        print(A[0].userEq)
+    #game=PygameGame()
+    #game.run()
 finally:
     pygame.quit()
