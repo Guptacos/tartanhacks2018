@@ -1,4 +1,5 @@
 from digital_circuit import *
+from gates import *
 
 colMax = 7
 rowMax = 5
@@ -28,7 +29,9 @@ def get_circuit(grid):      #grid is a 2d list
     circuit = create_elem(grid, val, rowNum, colNum)
     #check that every circuit element has been used
     for row in grid:
-        if is_empty(row):
+        if not is_empty(row):
+            print(row)
+            print(circuit)
             invalid_circuit("parts of circuit disconnected")
     return circuit
 
@@ -59,7 +62,7 @@ def create_elem(grid, val, curRow, curCol):
 
 def is_empty(row):
     for item in row:
-        if item != None: return false
+        if item != None: return False
     return True
 
 def get_row(grid, row):
@@ -86,7 +89,8 @@ def get_closest(grid, row, col):
 def check_behind(grid, row, col):
     colPrev = get_col(grid, col-1)
     (val1, row1) = (colPrev[row-1], row-1) if (col%2 == 0) else (colPrev[row], row)
-    (val2, row2) = (colPrev[row], row) if (col%2 == 1) else (colPrev[row+1], row+1)
+    (val2, row2) = (colPrev[row], row) if (col%2 == 0) else (colPrev[row+1], row+1)
+    print(val1, row1, val2, row2)
     if (val1 != None and val2 != None): return (val1, val2, row1, row2)
     elif (val1 == None): return (val2, val2, row2, row2)
     else: return (val1, val1, row1, row1)
