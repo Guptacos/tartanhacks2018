@@ -1,36 +1,36 @@
 from digital_circuit import *
 
-class AndGate(circuit):
+class AndGate(Circuit):
     def get_user_eq(self):
         return ("(%s & %s)" % (self.in1,self.in2))
 
-class OrGate(circuit):
+class OrGate(Circuit):
     def get_user_eq(self):
         return ("(%s | %s)" % (self.in1,self.in2))
 
-class XorGate(circuit):
+class XorGate(Circuit):
     def get_user_eq(self):
         return ("(%s ^ %s)" % (self.in1,self.in2))
         
-class NotGate(circuit):
-    def __init__(self,in1):
-        self.in1=in1
+class NotGate(Circuit):
+    def __init__(self,in1,image=None):
+        super().__init__(in1,None,image)
 
     def get_user_eq(self):
         return ("(not %s)" % (self.in1))
 
-class NandGate(circuit):
+class NandGate(Circuit):
     def get_user_eq(self):
         return ("(not (%s & %s))" % (self.in1,self.in2))
 
-class NorGate(circuit):
+class NorGate(Circuit):
     def get_user_eq(self):
         return ("(not (%s | %s))" % (self.in1,self.in2))
 
-A=input('A')
-B=input('B')
-cir1=AndGate(A,B)
-cir2=OrGate(A,cir1)
-cir3=NotGate(B)
-cir4=NandGate(cir3,cir2)
-print(cir4.get_user_eq())
+# A=Input('A')
+# B=Input('B')
+# cir1=AndGate(A,B)
+# cir2=OrGate(A,cir1)
+# cir3=NotGate(B)
+# cir4=NandGate(cir3,cir2)
+# print(cir4.get_user_eq())
