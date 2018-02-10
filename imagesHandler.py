@@ -86,7 +86,7 @@ def filter_images():
     ####  OpenCV test functions  ####
 
 def get_img():
-    cam = VideoCapture(0)
+    cam = VideoCapture(1)
     s, img = cam.read()
     if s:
         namedWindow("cam-test",WINDOW_NORMAL)
@@ -96,7 +96,7 @@ def get_img():
         imwrite("CVTEST.jpg",img) #save image
 
 def live_feed():
-    cap = VideoCapture(0)
+    cap = VideoCapture(1)
     while (True):
         ret,frame = cap.read()
         namedWindow('frame',WINDOW_NORMAL)
@@ -105,8 +105,6 @@ def live_feed():
             break
     cap.release()
     destroyAllWindows()
-
- 
             
 
 

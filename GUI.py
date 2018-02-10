@@ -3,11 +3,13 @@ from gates import *
 from digital_circuit import *
 import random
 import os
+from imagesHandler import *
 
 #COLORS
 WHITE = (255, 255, 255)
 BLACK = (0,0,0)
-RED = (255,20,20)
+DULL_RED= (161,20,20)
+BRIGHT_RED = (255,20,20)
 DULL_GREEN= (32,173,0)
 BRIGHT_GREEN=(43,235,0)
 LIGHT_GRAY=(168,168,168)
@@ -18,7 +20,7 @@ LIGHT_YELLOW=(254,255,189)
 SOLID_YELLOW=(255,239,15)
 
 class PygameGame(object):
-    def __init__(self, width=1538, height=864, fps=30, title="112 Pygame Game"):
+    def __init__(self, width=1538, height=864, fps=30, title="D I G I T I Z E"):
         self.width = width
         self.height = height
         self.fps = fps
@@ -27,23 +29,31 @@ class PygameGame(object):
 
     def init(self,screen):
         self.mode="Menu"
+        self.analyze=False
+        self.error=''
 
         #RECT COLORS
         self.titleRectColor=SOLID_YELLOW
         self.playNowRectColor=DULL_GREEN
         self.aboutRectColor=DULL_GREEN
         self.exitRectColor=DULL_GREEN
+        self.analyzeRectColor=DULL_RED
+        self.sanalyzeRectColor=DULL_RED
 
         #FONTS
         self.titleFont=pygame.font.SysFont('Arial',int(self.height*.1))
         self.buttonFont=pygame.font.SysFont('Arial',int(self.height*.045))
         self.inputFont=pygame.font.SysFont('Arial',int(self.height*.02))
+        self.analyzeBFont=pygame.font.SysFont('Arial',int(self.height*.12))
+        self.titleFont.set_italic(True)
 
         #RECTS
         self.titleRect=pygame.Rect(self.width*.1,self.height*.04,self.width*.8,self.height*.12)
         self.playNowRect=pygame.Rect(self.width*.425,self.height*.3,self.width*.15,self.height*.07)
         self.aboutRect=pygame.Rect(self.width*.425,self.height*.4,self.width*.15,self.height*.07)
         self.exitRect=pygame.Rect(self.width*.425,self.height*.5,self.width*.15,self.height*.07)
+        self.analyzeRect=pygame.Rect(self.width*.3,self.height*.4,self.width*.4,self.height*.2)
+        self.sanalyzeRect=pygame.Rect(self.width*.425,self.height*.7,self.width*.15,self.height*.07)
 
         #IMAGES
         self.andGate=pygame.image.load("Gimages/andgate1.png")
@@ -70,7 +80,10 @@ class PygameGame(object):
         self.objList=[]
         self.gates=[self.scAndGate,self.scOrGate,self.scXorGate,self.scNotGate,self.scNandGate,self.scNorGate]
         self.wirelen=self.width*.04
-        self.spread=self.height*.02
+        self.spread=self.height*.05
+        self.depth=1
+        self.sVal=3
+        self.dRat=self.sVal/self.depth
 
     def run(self):
         clock = pygame.time.Clock()
@@ -162,7 +175,7 @@ class PygameGame(object):
     def menuMousePressed(self, x, y):
         if self.playNowRect.collidepoint(x,y):
             self.mode='Live'
-            self.objList.append(self.createCircuit())
+            #self.objList.append(self.createCircuit())
         elif self.aboutRect.collidepoint(x,y):
             self.mode='Help'
         elif self.exitRect.collidepoint(x,y):
@@ -205,7 +218,7 @@ class PygameGame(object):
         self.displayText(screen,self.title,self.titleFont,WHITE,center=self.titleRect.center)
         #Play Now
         pygame.draw.rect(screen,self.playNowRectColor,self.playNowRect)
-        self.displayText(screen,'PLAY NOW!',self.buttonFont,WHITE,center=self.playNowRect.center)
+        self.displayText(screen,'LIVE MODE',self.buttonFont,WHITE,center=self.playNowRect.center)
         #About
         pygame.draw.rect(screen,self.aboutRectColor,self.aboutRect)
         self.displayText(screen,'ABOUT',self.buttonFont,WHITE,center=self.aboutRect.center)
@@ -220,7 +233,22 @@ class PygameGame(object):
 
 #LIVE
     def liveMousePressed(self, x, y):
-        pass
+        if not self.analyze and self.analyzeRect.collidepoint(x,y):
+            self.analyze=True
+            circuit=getCircuit()
+            if circuit[1]=='':
+                self.objList.append(circuit[0])
+            else:
+                self.error=circuit[1]
+        if self.analyze:
+            if self.sanalyzeRect.collidepoint(x,y):
+                self.error=''
+                circuit=getCircuit()
+                if circuit[1]=='':
+                    self.objList.pop()
+                    self.objList.append(circuit[0])
+                else:
+                    self.error=circuit[1]
 
     def liveMouseReleased(self, x, y):
         pass
@@ -233,7 +261,7 @@ class PygameGame(object):
 
     def liveKeyPressed(self, keyCode, modifier):
         if keyCode==113:
-            self.playing=False;
+            self.playing=False
 
     def liveKeyReleased(self, keyCode, modifier):
         pass
@@ -242,11 +270,34 @@ class PygameGame(object):
         pass
 
     def liveRedrawAll(self, screen):
-        for obj in self.objList:
-            start=(self.width*.8,self.height*.2)
-            self.drawWire(screen,start,(start[0]-.5*self.wirelen,start[1]))
-            self.drawCircuit(screen,obj,(start[0]-.5*self.wirelen,start[1]))
-            self.displayText(screen,"Output",self.inputFont,BLACK,center=(start[0]+23,start[1]-6))
+        if not self.analyze:
+            if self.analyzeRect.collidepoint(pygame.mouse.get_pos()):
+                self.analyzeRectColor=BRIGHT_RED
+            else:
+                self.analyzeRectColor=DULL_RED
+            pygame.draw.rect(screen,self.analyzeRectColor,self.analyzeRect)
+            self.displayText(screen,'ANALYZE!',self.analyzeBFont,WHITE,center=self.analyzeRect.center)
+        else:
+            if self.error!='':
+                self.displayText(screen,self.error,self.buttonFont,BLACK,center=(self.width/2,self.height/2))
+                if self.sanalyzeRect.collidepoint(pygame.mouse.get_pos()):
+                    self.sanalyzeRectColor=BRIGHT_RED
+                else:
+                    self.sanalyzeRectColor=DULL_RED
+                pygame.draw.rect(screen,self.sanalyzeRectColor,self.sanalyzeRect)
+                self.displayText(screen,'RE-ANALYZE!',self.buttonFont,WHITE,center=self.sanalyzeRect.center)
+            else:
+                for obj in self.objList:
+                    start=(self.width*.65,self.height*.2)
+                    self.drawWire(screen,start,(start[0]-.5*self.wirelen,start[1]))
+                    self.drawCircuit(screen,obj,(start[0]-.5*self.wirelen,start[1]))
+                    self.displayText(screen,"Output",self.inputFont,BLACK,center=(start[0]+23,start[1]-6))
+                    if self.sanalyzeRect.collidepoint(pygame.mouse.get_pos()):
+                        self.sanalyzeRectColor=BRIGHT_RED
+                    else:
+                        self.sanalyzeRectColor=DULL_RED
+                    pygame.draw.rect(screen,self.sanalyzeRectColor,self.sanalyzeRect)
+                    self.displayText(screen,'RE-ANALYZE!',self.buttonFont,WHITE,center=self.sanalyzeRect.center)
 
     def liveIsKeyPressed(self, key):
         pass
@@ -281,6 +332,46 @@ class PygameGame(object):
     def helpIsKeyPressed(self, key):
         pass
 
+    def getLowerBound(self,circuit,start):
+        curLow=start
+        if isinstance(circuit,CInput): 
+            return curLow
+        elif isinstance(circuit,Circuit):
+            curLow+=circuit.image.get_height()/2
+            start=0
+            if not isinstance(circuit,NotGate):
+                start-=circuit.image.get_height()/4
+            if isinstance(circuit.in2,CInput):
+                return curLow
+            elif isinstance(circuit.in2,Circuit) and isinstance(circuit.in1,CInput):
+                self.depth+=1
+                return curLow+self.getLowerBound(circuit.in2,0)
+            elif isinstance(circuit.in2,Circuit) and isinstance(circuit.in1,Circuit):
+                curLow+=self.spread*self.dRat+start
+                self.depth+=1
+                return curLow+self.getLowerBound(circuit.in2,0)
+            else:
+                return curLow+self.getLowerBound(circuit.in1,0)
+
+    def getUpperBound(self,circuit):
+        curHi=start
+        if isinstance(circuit,CInput): 
+            return curHi
+        elif isinstance(circuit,Circuit):
+            curHi-=circuit.image.get_height()/2
+            if not isinstance(circuit,NotGate):
+                start+=circuit.image.get_height()/4
+            if isinstance(circuit.in1,CInput):
+                return curHi
+            elif isinstance(circuit.in1,Circuit) and isinstance(circuit.in1,CInput):
+                self.depth+=1
+                return curLow-self.getLowerBound(circuit.in1,0)
+            elif isinstance(circuit.in1,Circuit) and isinstance(circuit.in1,Circuit):
+                curLow-=self.spread*self.dRat
+                self.depth+=1
+                return curHi-self.getLowerBound(circuit.in1,0)
+
+
     def displayText(self,screen,text, font, color, pos=(0,0), center=None):
         textSurface=font.render(text,True,color)
         textRect=textSurface.get_rect()
@@ -303,8 +394,8 @@ class PygameGame(object):
             pygame.draw.line(screen,BLACK,(int(initial[0]-lineLen*.25),initial[1]),(int(initial[0]-lineLen*.25),final[1]),2)
             pygame.draw.line(screen,BLACK,(int(initial[0]-lineLen*.25),final[1]),final,2)
 
-    def drawCircuit(self,screen,circuit,start,depth=1):
-        dRat=4/depth
+    def drawCircuit(self,screen,circuit,start):
+        self.dRat=self.sVal/self.depth
         if isinstance(circuit,CInput):
             self.displayText(screen,circuit.name,self.inputFont,BLACK,center=(start[0]-8,start[1]))
         elif isinstance(circuit,Circuit):
@@ -315,35 +406,45 @@ class PygameGame(object):
                 if isinstance(circuit.in1,Circuit):
                     self.drawWire(screen,(start[0]-gateWidth,start[1]),
                         (start[0]-gateWidth-self.wirelen,start[1]))
-                    self.drawCircuit(screen,circuit.in1,(start[0]-gateWidth-self.wirelen,start[1]),depth+1)
+                    self.depth+=1
+                    self.drawCircuit(screen,circuit.in1,(start[0]-gateWidth-self.wirelen,start[1]))
+                    self.depth-=1
                 else:
                     self.drawWire(screen,(start[0]-gateWidth,start[1]),
                         (start[0]-gateWidth-.5*self.wirelen,start[1]))
-                    self.drawCircuit(screen,circuit.in1,(start[0]-gateWidth-.5*self.wirelen,start[1]),depth+1)
+                    self.drawCircuit(screen,circuit.in1,(start[0]-gateWidth-.5*self.wirelen,start[1]))
             else:
                 start1=(start[0]-gateWidth,start[1]-gateHeight/4)
                 start2=(start[0]-gateWidth,start[1]+gateHeight/4)
                 if isinstance(circuit.in1,Circuit) and isinstance(circuit.in2,Circuit):
-                    self.drawWire(screen,start1,(start1[0]-self.wirelen,start1[1]-self.spread*dRat))
-                    self.drawCircuit(screen,circuit.in1,(start1[0]-self.wirelen,start1[1]-self.spread*dRat),depth+1)
-                    self.drawWire(screen,start2,(start1[0]-self.wirelen,start2[1]+self.spread*dRat))
-                    self.drawCircuit(screen,circuit.in2,(start1[0]-self.wirelen,start2[1]+self.spread*dRat),depth+1)
+                    self.drawWire(screen,start1,(start1[0]-self.wirelen,start1[1]-self.spread*self.dRat))
+                    self.depth+=1
+                    self.drawCircuit(screen,circuit.in1,(start1[0]-self.wirelen,start1[1]-self.spread*self.dRat))
+                    self.depth-=1
+                    self.drawWire(screen,start2,(start1[0]-self.wirelen,start2[1]+self.spread*self.dRat))
+                    self.depth+=1
+                    self.drawCircuit(screen,circuit.in2,(start1[0]-self.wirelen,start2[1]+self.spread*self.dRat))
+                    self.depth-=1
                 else:
                     if isinstance(circuit.in1,Circuit):
                         self.drawWire(screen,start1,(start1[0]-self.wirelen,start1[1]))
-                        self.drawCircuit(screen,circuit.in1,(start1[0]-self.wirelen,start1[1]),depth+1)
+                        self.depth+=1
+                        self.drawCircuit(screen,circuit.in1,(start1[0]-self.wirelen,start1[1]))
+                        self.depth-=1
                         self.drawWire(screen,start2,(start2[0]-.5*self.wirelen,start2[1]))
-                        self.drawCircuit(screen,circuit.in2,(start2[0]-.5*self.wirelen,start2[1]),depth+1)
+                        self.drawCircuit(screen,circuit.in2,(start2[0]-.5*self.wirelen,start2[1]))
                     elif isinstance(circuit.in2,Circuit):
                         self.drawWire(screen,start1,(start1[0]-.5*self.wirelen,start1[1]))
-                        self.drawCircuit(screen,circuit.in1,(start1[0]-.5*self.wirelen,start1[1]),depth+1)
+                        self.drawCircuit(screen,circuit.in1,(start1[0]-.5*self.wirelen,start1[1]))
                         self.drawWire(screen,start2,(start2[0]-self.wirelen,start2[1]))
-                        self.drawCircuit(screen,circuit.in2,(start2[0]-self.wirelen,start2[1]),depth+1)
+                        self.depth+=1
+                        self.drawCircuit(screen,circuit.in2,(start2[0]-self.wirelen,start2[1]))
+                        self.depth-=1
                     else:
                         self.drawWire(screen,start1,(start1[0]-.5*self.wirelen,start1[1]))
-                        self.drawCircuit(screen,circuit.in1,(start1[0]-.5*self.wirelen,start1[1]),depth+1)
+                        self.drawCircuit(screen,circuit.in1,(start1[0]-.5*self.wirelen,start1[1]))
                         self.drawWire(screen,start2,(start2[0]-.5*self.wirelen,start2[1]))
-                        self.drawCircuit(screen,circuit.in2,(start2[0]-.5*self.wirelen,start2[1]),depth+1)
+                        self.drawCircuit(screen,circuit.in2,(start2[0]-.5*self.wirelen,start2[1]))
 
     def drawNGCircuit(self,screen,circuit,start):
         if isinstance(circuit,CInput):
@@ -375,6 +476,12 @@ class PygameGame(object):
         cir3=NotGate(B,self.scNotGate)
         cir4=NandGate(cir3,cir2,self.scNandGate)
         return cir4
+
+def getCircuit():
+    get_img()
+    getGridImages("CVTEST.jpg")
+    array=images2Circ(filter_images())
+    return get_circuit(array)
 
 try:
     game=PygameGame()
