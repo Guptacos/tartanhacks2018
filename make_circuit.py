@@ -8,6 +8,7 @@ def get_circuit(grid):      #grid is a 2d list
     output = None
     rowNum = 0
     colNum = colMax
+    err = ""
 
     while True:     #finds rightmost output gate
         val = grid[rowNum][colNum]
@@ -21,22 +22,27 @@ def get_circuit(grid):      #grid is a 2d list
         if colNum < 0: invalid_circuit("No gates found!")
     #at this point, rowNum and rowCol are the coordinates of the output val
     #now we have to check that there are no gates in the same row as the output
-    grid[rowNum][colNum] = None
+    #grid[rowNum][colNum] = None
     curCol = get_col(grid, colNum)
-    if not is_empty(curCol): invalid_circuit("Can't have multiple outputs!")
-    
+    #if not is_empty(curCol): invalid_circuit("Can't have multiple outputs!")
+    for index in range(rowMax + 1):
+        if index == rowNum: continue
+        elif curCol[index] != None: 
+            invalid_circuit("Can't have multiple outputs!")
+        
+
     print("output gate = ", rowNum, colNum, val)
     circuit = create_elem(grid, val, rowNum, colNum)
     #check that every circuit element has been used
-    for row in grid:
-        if not is_empty(row):
-            print(row)
-            print(circuit)
-            invalid_circuit("parts of circuit disconnected")
+    #for row in grid:
+    #    if not is_empty(row):
+    #        print(row)
+    #        print(circuit)
+    #        invalid_circuit("parts of circuit disconnected")
     return circuit
 
 def create_elem(grid, val, curRow, curCol):
-    grid[curRow][curCol] = None
+    #grid[curRow][curCol] = None
 #    if val == None: raise Exception("Error: tried to create None gate")
 
     if val == "A": return CInput("A")
