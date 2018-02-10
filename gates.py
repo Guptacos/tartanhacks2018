@@ -14,7 +14,7 @@ class XorGate(circuit):
         
 class NotGate(circuit):
     def __init__(self,in1):
-        self.in1=in1
+        super().__init__(in1,None)
 
     def get_user_eq(self):
         return ("(not %s)" % (self.in1))
