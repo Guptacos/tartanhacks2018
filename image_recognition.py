@@ -48,6 +48,10 @@ def images2Circ(photos):
             circuit[i][j] = gate
     return circuit
 
+<<<<<<< HEAD
 
+=======
+print(images2Circ("Photos/TartanHacks/Test1/"))
+>>>>>>> 98ece2150910890d88d876e646df3fc39b02f139
         
         
