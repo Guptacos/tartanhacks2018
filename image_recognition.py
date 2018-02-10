@@ -73,6 +73,6 @@ def images2Circ(photos):
             circuit[i][j] = gate
     return circuit
 
-print(images2Circ("Photos/t2/"))
+print(images2Circ("Photos/TartanHacks/Test1/"))
         
         
