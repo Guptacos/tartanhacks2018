@@ -1,6 +1,7 @@
 import pygame
 from gates import *
 from digital_circuit import *
+from make_circuit import *
 import random
 import os
 from imagesHandler import *
