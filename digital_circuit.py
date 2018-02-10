@@ -20,7 +20,11 @@ class Circuit(object):
 
     def get_qm(self):
         if self.qm == None:
+<<<<<<< HEAD
             self.qm = get_min(self.get_table())
+=======
+            self.qm = getMin(self.get_table())
+>>>>>>> 6294d40f84af9f332d5361f3d9b674581109e32f
         return self.qm
 
     def get_user_eq(self):
