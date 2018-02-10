@@ -13,7 +13,7 @@ class circuit(object):
         return self.userEq
 
     def get_table(self):
-        if self.truthTable == None
+        if self.truthTable == None:
             self.truthTable = make_truth_table(self.userEq)
         return self.truthTable
 
@@ -23,8 +23,8 @@ class circuit(object):
         return self.qm
 
     def get_user_eq(self):
-        raise Exception("You forgot to define get_user_eq in a child function 
-                        you goon")
+        raise Exception("""You forgot to define get_user_eq in a child function 
+                        you goon""")
         return None
 
 class input(object):

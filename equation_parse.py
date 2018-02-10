@@ -16,7 +16,7 @@ def parse_equation(A,B,C,D,equation):
 
     return eval(newStr)
 
-print(parse_equation(True,False,True,True,"(A ^ B)"))
+#print(parse_equation(True,False,True,True,"(A ^ B)"))
 
 def make_truth_table(equation):
     table = [False]*16
@@ -30,4 +30,4 @@ def make_truth_table(equation):
 
     return table 
 
-print(make_truth_table("A"))
+#print(make_truth_table("A"))
