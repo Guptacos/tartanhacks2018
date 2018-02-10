@@ -196,7 +196,6 @@ class PygameGame(object):
     def menuMousePressed(self, x, y):
         if self.playNowRect.collidepoint(x,y):
             self.mode='Live'
-            #self.objList.append(self.createCircuit())
         elif self.aboutRect.collidepoint(x,y):
             os.startfile("README.txt")
         elif self.exitRect.collidepoint(x,y):
@@ -267,24 +266,24 @@ class PygameGame(object):
     def liveMousePressed(self, x, y):
         if not self.analyze and self.analyzeRect.collidepoint(x,y):
             self.analyze=True
-            circuit=self.createCircuit()
-            self.objList.append(circuit)
-            # circuit=getCircuit()
-            # if circuit[1]=='':
-            #     self.objList.append(circuit[0])
-            # else:
-            #     self.error=circuit[1]
+            # circuit=self.createCircuit()
+            # self.objList.append(circuit)
+            circuit=getCircuit()
+            if circuit[1]=='':
+                self.objList.append(circuit[0])
+            else:
+                self.error=circuit[1]
         if self.analyze:
             if self.sanalyzeRect.collidepoint(x,y):
                 self.error=''
                 #circuit=getCircuit()
-                circuit=self.createCircuit()
-                self.objList.append(circuit)
-                # if circuit[1]=='':
-                #     self.objList.pop()
-                #     self.objList.append(circuit[0])
-                # else:
-                #     self.error=circuit[1]
+                # circuit=self.createCircuit()
+                # self.objList.append(circuit)
+                if circuit[1]=='':
+                    self.objList.pop()
+                    self.objList.append(circuit[0])
+                else:
+                    self.error=circuit[1]
             elif self.buttonARect.collidepoint(x,y):
                 self.AON= not self.AON
             elif self.buttonBRect.collidepoint(x,y):
@@ -564,7 +563,7 @@ class PygameGame(object):
         cir1=OrGate(B,C,self.scOrGate)
         cir2=AndGate(A,cir1,self.scAndGate)
         cir3=NotGate(B,self.scNotGate)
-        cir4=OrGate(cir2,cir3,self.scAndGate)
+        cir4=AndGate(cir2,cir3,self.scAndGate)
         return cir4
 
 def getCircuit():
@@ -574,9 +573,6 @@ def getCircuit():
     return get_circuit(array)
 
 try:
-    # A=getCircuit()
-    # if A[1]=='':
-    #     print(A[0].userEq)
     game=PygameGame()
     game.run()
 finally:

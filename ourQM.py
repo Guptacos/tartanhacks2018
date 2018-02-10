@@ -6,11 +6,19 @@ from qm import *
 
 def getMin(ones):
     print(ones)
-    qmOutput = qm(ones) #get minimized qm function from library
+    minterms = get_minterms(ones)
+    print(minterms)
+    qmOutput = qm(minterms) #get minimized qm function from library
     print(qmOutput)
     equation = convert(qmOutput)    #convert library output to work with eval
     print(equation)
     return equation
+
+def get_minterms(ones):
+    result = []
+    for i in range (16):
+        if ones[i]: result.append(i)
+    return result
 
 def convert(qm):
     #if the equation is always true return 1
@@ -25,24 +33,24 @@ def convert(qm):
     for product in qm:
         eq += "("
         numOp = len(product)
-        count = 0
-        while count < numOp:
+        count = -1
+        while abs(count) <= numOp:
             val = product[count]
-            if count == 0:
+            if count == -1:
                 if val == '1': eq += "A"
                 elif val == '0': eq += "(not A)"
-            elif count == 1:
+            elif count == -2:
                 if val == '1': eq += "B"
                 elif val == '0': eq += "(not B)"
-            elif count == 2:
+            elif count == -3:
                 if val == '1': eq += "C"
                 elif val == '0': eq += "(not C)"
-            elif count == 3:
+            elif count == -4:
                 if val == '1': eq += "D"
                 elif val == '0': eq += "(not D)"
         
             if val != "X": eq += " & "
-            count += 1
+            count -= 1
         eq = eq[0 : -3] #after completing, remove the last &
         eq += ") | "
     eq = eq[0 : -3]
