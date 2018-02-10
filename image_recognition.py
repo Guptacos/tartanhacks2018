@@ -49,6 +49,6 @@ def images2Circ(photos):
     return circuit
 
 
-print(images2Circ("Photos/t2/"))
+print(images2Circ("Photos/t3/"))
         
         
