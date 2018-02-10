@@ -1,5 +1,6 @@
 import pygame
-from CirSymbols import *
+from gates import *
+from digital_circuit import *
 import random
 import os
 
@@ -17,7 +18,7 @@ LIGHT_YELLOW=(254,255,189)
 SOLID_YELLOW=(255,239,15)
 
 class PygameGame(object):
-    def __init__(self, width=1000, height=650, fps=30, title="112 Pygame Game"):
+    def __init__(self, width=1538, height=864, fps=30, title="112 Pygame Game"):
         self.width = width
         self.height = height
         self.fps = fps
@@ -36,6 +37,7 @@ class PygameGame(object):
         #FONTS
         self.titleFont=pygame.font.SysFont('Arial',int(self.height*.1))
         self.buttonFont=pygame.font.SysFont('Arial',int(self.height*.045))
+        self.inputFont=pygame.font.SysFont('Arial',int(self.height*.02))
 
         #RECTS
         self.titleRect=pygame.Rect(self.width*.1,self.height*.04,self.width*.8,self.height*.12)
@@ -44,12 +46,12 @@ class PygameGame(object):
         self.exitRect=pygame.Rect(self.width*.425,self.height*.5,self.width*.15,self.height*.07)
 
         #IMAGES
-        self.andGate=pygame.image.load("andgate1.png")
-        self.orGate=pygame.image.load("orgate1.png")
-        self.xorGate=pygame.image.load("xorgate1.png")
-        self.notGate=pygame.image.load("notgate1.png")
-        self.nandGate=pygame.image.load("nandgate1.png")
-        self.norGate=pygame.image.load("norgate1.png")
+        self.andGate=pygame.image.load("Gimages/andgate1.png")
+        self.orGate=pygame.image.load("Gimages/orgate1.png")
+        self.xorGate=pygame.image.load("Gimages/xorgate1.png")
+        self.notGate=pygame.image.load("Gimages/notgate1.png")
+        self.nandGate=pygame.image.load("Gimages/nandgate1.png")
+        self.norGate=pygame.image.load("Gimages/norgate1.png")
         self.andRatio=self.andGate.get_width()/self.andGate.get_height()
         self.orRatio=self.orGate.get_width()/self.orGate.get_height()
         self.xorRatio=self.xorGate.get_width()/self.xorGate.get_height()
@@ -65,9 +67,10 @@ class PygameGame(object):
         self.scNorGate=pygame.transform.scale(self.norGate,(int(self.gateHeight*self.norRatio),self.gateHeight))
 
         #LIVE
-        self.i=0
         self.objList=[]
         self.gates=[self.scAndGate,self.scOrGate,self.scXorGate,self.scNotGate,self.scNandGate,self.scNorGate]
+        self.wirelen=self.width*.04
+        self.spread=self.height*.02
 
     def run(self):
         clock = pygame.time.Clock()
@@ -159,6 +162,7 @@ class PygameGame(object):
     def menuMousePressed(self, x, y):
         if self.playNowRect.collidepoint(x,y):
             self.mode='Live'
+            self.objList.append(self.createCircuit())
         elif self.aboutRect.collidepoint(x,y):
             self.mode='Help'
         elif self.exitRect.collidepoint(x,y):
@@ -228,7 +232,8 @@ class PygameGame(object):
         pass
 
     def liveKeyPressed(self, keyCode, modifier):
-        pass
+        if keyCode==113:
+            self.playing=False;
 
     def liveKeyReleased(self, keyCode, modifier):
         pass
@@ -238,7 +243,10 @@ class PygameGame(object):
 
     def liveRedrawAll(self, screen):
         for obj in self.objList:
-            self.drawCir(screen,obj)
+            start=(self.width*.8,self.height*.2)
+            self.drawWire(screen,start,(start[0]-.5*self.wirelen,start[1]))
+            self.drawCircuit(screen,obj,(start[0]-.5*self.wirelen,start[1]))
+            self.displayText(screen,"Output",self.inputFont,BLACK,center=(start[0]+23,start[1]-6))
 
     def liveIsKeyPressed(self, key):
         pass
@@ -283,8 +291,90 @@ class PygameGame(object):
             textRect
             screen.blit(textSurface,pos)
 
-    def drawCir(self,screen,cir):
-        screen.blit(cir.image,(cir.x,cir.y))
+    def drawGate(self,screen,gate,pos):
+        screen.blit(gate.image,pos)
+
+    def drawWire(self,screen,initial,final):
+        if initial[1]==final[1]:
+            pygame.draw.line(screen,BLACK,initial,final,2)
+        else:
+            lineLen=abs(final[0]-initial[0])
+            pygame.draw.line(screen,BLACK,initial,(int(initial[0]-lineLen*.25),initial[1]),2)
+            pygame.draw.line(screen,BLACK,(int(initial[0]-lineLen*.25),initial[1]),(int(initial[0]-lineLen*.25),final[1]),2)
+            pygame.draw.line(screen,BLACK,(int(initial[0]-lineLen*.25),final[1]),final,2)
+
+    def drawCircuit(self,screen,circuit,start,depth=1):
+        dRat=4/depth
+        if isinstance(circuit,CInput):
+            self.displayText(screen,circuit.name,self.inputFont,BLACK,center=(start[0]-8,start[1]))
+        elif isinstance(circuit,Circuit):
+            gateWidth=circuit.image.get_width()
+            gateHeight=circuit.image.get_height()
+            self.drawGate(screen,circuit,(start[0]-gateWidth,start[1]-gateHeight/2))
+            if isinstance(circuit,NotGate):
+                if isinstance(circuit.in1,Circuit):
+                    self.drawWire(screen,(start[0]-gateWidth,start[1]),
+                        (start[0]-gateWidth-self.wirelen,start[1]))
+                    self.drawCircuit(screen,circuit.in1,(start[0]-gateWidth-self.wirelen,start[1]),depth+1)
+                else:
+                    self.drawWire(screen,(start[0]-gateWidth,start[1]),
+                        (start[0]-gateWidth-.5*self.wirelen,start[1]))
+                    self.drawCircuit(screen,circuit.in1,(start[0]-gateWidth-.5*self.wirelen,start[1]),depth+1)
+            else:
+                start1=(start[0]-gateWidth,start[1]-gateHeight/4)
+                start2=(start[0]-gateWidth,start[1]+gateHeight/4)
+                if isinstance(circuit.in1,Circuit) and isinstance(circuit.in2,Circuit):
+                    self.drawWire(screen,start1,(start1[0]-self.wirelen,start1[1]-self.spread*dRat))
+                    self.drawCircuit(screen,circuit.in1,(start1[0]-self.wirelen,start1[1]-self.spread*dRat),depth+1)
+                    self.drawWire(screen,start2,(start1[0]-self.wirelen,start2[1]+self.spread*dRat))
+                    self.drawCircuit(screen,circuit.in2,(start1[0]-self.wirelen,start2[1]+self.spread*dRat),depth+1)
+                else:
+                    if isinstance(circuit.in1,Circuit):
+                        self.drawWire(screen,start1,(start1[0]-self.wirelen,start1[1]))
+                        self.drawCircuit(screen,circuit.in1,(start1[0]-self.wirelen,start1[1]),depth+1)
+                        self.drawWire(screen,start2,(start2[0]-.5*self.wirelen,start2[1]))
+                        self.drawCircuit(screen,circuit.in2,(start2[0]-.5*self.wirelen,start2[1]),depth+1)
+                    elif isinstance(circuit.in2,Circuit):
+                        self.drawWire(screen,start1,(start1[0]-.5*self.wirelen,start1[1]))
+                        self.drawCircuit(screen,circuit.in1,(start1[0]-.5*self.wirelen,start1[1]),depth+1)
+                        self.drawWire(screen,start2,(start2[0]-self.wirelen,start2[1]))
+                        self.drawCircuit(screen,circuit.in2,(start2[0]-self.wirelen,start2[1]),depth+1)
+                    else:
+                        self.drawWire(screen,start1,(start1[0]-.5*self.wirelen,start1[1]))
+                        self.drawCircuit(screen,circuit.in1,(start1[0]-.5*self.wirelen,start1[1]),depth+1)
+                        self.drawWire(screen,start2,(start2[0]-.5*self.wirelen,start2[1]))
+                        self.drawCircuit(screen,circuit.in2,(start2[0]-.5*self.wirelen,start2[1]),depth+1)
+
+    def drawNGCircuit(self,screen,circuit,start):
+        if isinstance(circuit,CInput):
+            self.displayText(screen,circuit.name,self.inputFont,BLACK,center=(start[0]-8,start[1]))
+        elif isinstance(circuit,Circuit):
+            gateWidth=circuit.image.get_width()
+            gateHeight=circuit.image.get_height()
+            if isinstance(circuit,NotGate):
+                self.drawWire(screen,(start[0]-gateWidth,start[1]),(start[0]-gateWidth-self.wirelen,start[1]))
+                self.drawNGCircuit(screen,circuit.in1,(start[0]-gateWidth-self.wirelen,start[1]))
+            else:
+                start1=(start[0]-gateWidth,start[1]-gateHeight/4)
+                start2=(start[0]-gateWidth,start[1]+gateHeight/4)
+                if isinstance(circuit.in1,circuit):
+                    self.drawWire(screen,start1,(start1[0]-self.wirelen,start1[1]-self.spread))
+                    self.drawWire(screen,start2,(start1[0]-self.wirelen,start2[1]+self.spread))
+                    self.drawNGCircuit(screen,circuit.in1,(start[0]-gateWidth-self.wirelen,start[1]-gateHeight/4-self.spread))
+                    self.drawNGCircuit(screen,circuit.in2,(start[0]-gateWidth-self.wirelen,start[1]+gateHeight/4+self.spread))
+
+    def createCircuit(self):
+        A=CInput('A')
+        B=CInput('B')
+        C=CInput('C')
+        cir5=XorGate(C,B,self.scXorGate)
+        cir1=AndGate(A,cir5,self.scAndGate)
+        cir45=NorGate(A,C,self.scNorGate)
+        cir21=AndGate(cir45,B,self.scAndGate)
+        cir2=OrGate(cir1,cir21,self.scOrGate)
+        cir3=NotGate(B,self.scNotGate)
+        cir4=NandGate(cir3,cir2,self.scNandGate)
+        return cir4
 
 try:
     game=PygameGame()
