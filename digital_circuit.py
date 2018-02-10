@@ -1,13 +1,14 @@
 from equation_parse import *
 from ourQM import *
 
-class circuit(object):
-    def __init__(self,in1,in2):
+class Circuit(object):
+    def __init__(self,in1,in2,image=None):
         self.in1=in1
         self.in2=in2
         self.userEq = self.get_user_eq()
         self.truthTable = None
         self.qm = None
+        self.image=image
 
     def __repr__(self):
         return self.userEq
@@ -26,7 +27,7 @@ class circuit(object):
         raise Exception("You forgot to define get_user_eq in a child function you goon")
         return None
 
-class input(object):
+class CInput(object):
     def __init__(self,name):
         self.name=name
 
