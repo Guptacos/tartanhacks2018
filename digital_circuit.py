@@ -24,8 +24,8 @@ class Circuit(object):
         return self.qm
 
     def get_user_eq(self):
-        raise Exception("You forgot to define get_user_eq in a child function you goon")
-        return None
+        raise Exception("""You forgot to define get_user_eq in a child function 
+                        you goon""")
 
 class CInput(object):
     def __init__(self,name):
