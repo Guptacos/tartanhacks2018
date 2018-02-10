@@ -4,7 +4,8 @@ from digital_circuit import *
 import random
 import os
 from imagesHandler import *
-from image_recognition import *
+from equation_parse import *
+#from image_recognition import *
 
 #COLORS
 WHITE = (255, 255, 255)
@@ -21,7 +22,7 @@ LIGHT_YELLOW=(254,255,189)
 SOLID_YELLOW=(255,239,15)
 
 class PygameGame(object):
-    def __init__(self, width=1538, height=864, fps=30, title="D I G I T I Z E"):
+    def __init__(self, width=1538, height=840, fps=30, title="D  I  G  I  T  I  Z  E"):
         self.width = width
         self.height = height
         self.fps = fps
@@ -40,6 +41,11 @@ class PygameGame(object):
         self.exitRectColor=DULL_GREEN
         self.analyzeRectColor=DULL_RED
         self.sanalyzeRectColor=DULL_RED
+        self.buttonAColor=DULL_RED
+        self.buttonBColor=DULL_RED
+        self.buttonCColor=DULL_RED
+        self.buttonDColor=DULL_RED
+        self.OColor=DULL_RED
 
         #FONTS
         self.titleFont=pygame.font.SysFont('Arial',int(self.height*.1))
@@ -54,7 +60,13 @@ class PygameGame(object):
         self.aboutRect=pygame.Rect(self.width*.425,self.height*.4,self.width*.15,self.height*.07)
         self.exitRect=pygame.Rect(self.width*.425,self.height*.5,self.width*.15,self.height*.07)
         self.analyzeRect=pygame.Rect(self.width*.3,self.height*.4,self.width*.4,self.height*.2)
-        self.sanalyzeRect=pygame.Rect(self.width*.425,self.height*.7,self.width*.15,self.height*.07)
+        self.sanalyzeRect=pygame.Rect(self.width*.425,self.height*.9,self.width*.15,self.height*.07)
+
+        self.buttonARect=pygame.Rect(self.width*.2,self.height*.55,self.width*.15,self.height*.1)
+        self.buttonBRect=pygame.Rect(self.width*.2,self.height*.75,self.width*.15,self.height*.1)
+        self.buttonCRect=pygame.Rect(self.width*.5,self.height*.55,self.width*.15,self.height*.1)
+        self.buttonDRect=pygame.Rect(self.width*.5,self.height*.75,self.width*.15,self.height*.1)
+        self.buttonORect=pygame.Rect(self.width*.8,self.height*.65,self.width*.15,self.height*.1)
 
         #IMAGES
         self.andGate=pygame.image.load("Gimages/andgate1.png")
@@ -76,6 +88,8 @@ class PygameGame(object):
         self.scNotGate=pygame.transform.scale(self.notGate,(int(self.gateHeight*self.notRatio),self.gateHeight))
         self.scNandGate=pygame.transform.scale(self.nandGate,(int(self.gateHeight*self.nandRatio),self.gateHeight))
         self.scNorGate=pygame.transform.scale(self.norGate,(int(self.gateHeight*self.norRatio),self.gateHeight))
+        self.backImage=pygame.image.load("Back.jpg")
+        self.scBackImage=pygame.transform.scale(self.backImage,(self.width,self.height))
 
         #LIVE
         self.objList=[]
@@ -83,8 +97,13 @@ class PygameGame(object):
         self.wirelen=self.width*.04
         self.spread=self.height*.05
         self.depth=1
-        self.sVal=3
+        self.sVal=2
         self.dRat=self.sVal/self.depth
+        self.AON=False
+        self.BON=False
+        self.CON=False
+        self.DON=False
+        self.output=False
 
     def run(self):
         clock = pygame.time.Clock()
@@ -178,7 +197,7 @@ class PygameGame(object):
             self.mode='Live'
             #self.objList.append(self.createCircuit())
         elif self.aboutRect.collidepoint(x,y):
-            self.mode='Help'
+            os.startfile("README.txt")
         elif self.exitRect.collidepoint(x,y):
             self.playing=False
 
@@ -198,9 +217,17 @@ class PygameGame(object):
         pass
 
     def menuTimerFired(self, dt):
-        pass
+        color=self.titleRectColor
+        red=color[0]
+        green=color[1]
+        blue=color[2]
+        red=(red+1)%255
+        green=(green-2)%255
+        blue=(blue+3)%255
+        self.titleRectColor=red,green,blue
 
     def menuRedrawAll(self, screen):
+        screen.blit(self.scBackImage,(0,0))
         #Buttons
         if self.playNowRect.collidepoint(pygame.mouse.get_pos()):
             self.playNowRectColor=BRIGHT_GREEN
@@ -236,20 +263,32 @@ class PygameGame(object):
     def liveMousePressed(self, x, y):
         if not self.analyze and self.analyzeRect.collidepoint(x,y):
             self.analyze=True
-            circuit=getCircuit()
-            if circuit[1]=='':
-                self.objList.append(circuit[0])
-            else:
-                self.error=circuit[1]
+            circuit=self.createCircuit()
+            self.objList.append(circuit)
+            # circuit=getCircuit()
+            # if circuit[1]=='':
+            #     self.objList.append(circuit[0])
+            # else:
+            #     self.error=circuit[1]
         if self.analyze:
             if self.sanalyzeRect.collidepoint(x,y):
                 self.error=''
-                circuit=getCircuit()
-                if circuit[1]=='':
-                    self.objList.pop()
-                    self.objList.append(circuit[0])
-                else:
-                    self.error=circuit[1]
+                #circuit=getCircuit()
+                circuit=self.createCircuit()
+                self.objList.append(circuit)
+                # if circuit[1]=='':
+                #     self.objList.pop()
+                #     self.objList.append(circuit[0])
+                # else:
+                #     self.error=circuit[1]
+            elif self.buttonARect.collidepoint(x,y):
+                self.AON= not self.AON
+            elif self.buttonBRect.collidepoint(x,y):
+                self.BON= not self.BON
+            elif self.buttonCRect.collidepoint(x,y):
+                self.CON= not self.CON
+            elif self.buttonDRect.collidepoint(x,y):
+                self.DON= not self.DON
 
     def liveMouseReleased(self, x, y):
         pass
@@ -268,7 +307,8 @@ class PygameGame(object):
         pass
 
     def liveTimerFired(self, dt):
-        pass
+        if self.analyze and self.error=='':
+            self.output=parse_equation(self.AON,self.BON,self.CON,self.DON,self.objList[0].userEq)
 
     def liveRedrawAll(self, screen):
         if not self.analyze:
@@ -293,12 +333,59 @@ class PygameGame(object):
                     self.drawWire(screen,start,(start[0]-.5*self.wirelen,start[1]))
                     self.drawCircuit(screen,obj,(start[0]-.5*self.wirelen,start[1]))
                     self.displayText(screen,"Output",self.inputFont,BLACK,center=(start[0]+23,start[1]-6))
-                    if self.sanalyzeRect.collidepoint(pygame.mouse.get_pos()):
-                        self.sanalyzeRectColor=BRIGHT_RED
-                    else:
-                        self.sanalyzeRectColor=DULL_RED
-                    pygame.draw.rect(screen,self.sanalyzeRectColor,self.sanalyzeRect)
-                    self.displayText(screen,'RE-ANALYZE!',self.buttonFont,WHITE,center=self.sanalyzeRect.center)
+                
+                self.displayText(screen,self.objList[0].userEq,self.inputFont,BLACK,center=(self.width*.2,self.height*.4))
+                self.displayText(screen,self.objList[0].get_qm(),self.inputFont,BLACK,center=(self.width*.6,self.height*.4))
+
+                if self.sanalyzeRect.collidepoint(pygame.mouse.get_pos()):
+                    self.sanalyzeRectColor=BRIGHT_RED
+                else:
+                    self.sanalyzeRectColor=DULL_RED
+                pygame.draw.rect(screen,self.sanalyzeRectColor,self.sanalyzeRect)
+                self.displayText(screen,'RE-ANALYZE!',self.buttonFont,WHITE,center=self.sanalyzeRect.center)
+                
+                if self.AON:
+                    self.buttonAColor=SOLID_YELLOW
+                elif self.buttonARect.collidepoint(pygame.mouse.get_pos()):
+                    self.buttonAColor=BRIGHT_RED
+                else:
+                    self.buttonAColor=DULL_RED
+                pygame.draw.rect(screen,self.buttonAColor,self.buttonARect)
+                self.displayText(screen,'A',self.buttonFont,WHITE,center=self.buttonARect.center)
+                
+                if self.BON:
+                    self.buttonBColor=SOLID_YELLOW
+                elif self.buttonBRect.collidepoint(pygame.mouse.get_pos()):
+                    self.buttonBColor=BRIGHT_RED
+                else:
+                    self.buttonBColor=DULL_RED
+                pygame.draw.rect(screen,self.buttonBColor,self.buttonBRect)
+                self.displayText(screen,'B',self.buttonFont,WHITE,center=self.buttonBRect.center)
+                
+                if self.CON:
+                    self.buttonCColor=SOLID_YELLOW
+                elif self.buttonCRect.collidepoint(pygame.mouse.get_pos()):
+                    self.buttonCColor=BRIGHT_RED
+                else:
+                    self.buttonCColor=DULL_RED
+                pygame.draw.rect(screen,self.buttonCColor,self.buttonCRect)
+                self.displayText(screen,'C',self.buttonFont,WHITE,center=self.buttonCRect.center)
+                
+                if self.DON:
+                    self.buttonDColor=SOLID_YELLOW
+                elif self.buttonDRect.collidepoint(pygame.mouse.get_pos()):
+                    self.buttonDColor=BRIGHT_RED
+                else:
+                    self.buttonDColor=DULL_RED
+                pygame.draw.rect(screen,self.buttonDColor,self.buttonDRect)
+                self.displayText(screen,'D',self.buttonFont,WHITE,center=self.buttonDRect.center)
+
+                if self.output:
+                    self.OColor=SOLID_YELLOW
+                else:
+                    self.OColor=DULL_RED
+                pygame.draw.rect(screen,self.OColor,self.buttonORect)
+                self.displayText(screen,'Output',self.buttonFont,WHITE,center=self.buttonORect.center)
 
     def liveIsKeyPressed(self, key):
         pass
@@ -485,10 +572,10 @@ def getCircuit():
     return get_circuit(array)
 
 try:
-    A=getCircuit()
-    if A[1]=='':
-        print(A[0].userEq)
-    #game=PygameGame()
-    #game.run()
+    # A=getCircuit()
+    # if A[1]=='':
+    #     print(A[0].userEq)
+    game=PygameGame()
+    game.run()
 finally:
     pygame.quit()
