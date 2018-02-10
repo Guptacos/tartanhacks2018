@@ -222,9 +222,12 @@ class PygameGame(object):
         red=color[0]
         green=color[1]
         blue=color[2]
-        red=(red+1)%255
-        green=(green-2)%255
-        blue=(blue+3)%255
+        redr=random.randint(1,4)
+        greenr=random.randint(1,4)
+        bluer=random.randint(1,4)
+        red=(red+redr)%255
+        green=(green-greenr)%255
+        blue=(blue+bluer)%255
         self.titleRectColor=red,green,blue
 
     def menuRedrawAll(self, screen):
@@ -336,6 +339,7 @@ class PygameGame(object):
                     self.displayText(screen,"Output",self.inputFont,BLACK,center=(start[0]+23,start[1]-6))
                 
                 self.displayText(screen,self.objList[0].userEq,self.inputFont,BLACK,center=(self.width*.2,self.height*.4))
+                #print(self.objList[0].get_qm())
                 self.displayText(screen,self.objList[0].get_qm(),self.inputFont,BLACK,center=(self.width*.6,self.height*.4))
 
                 if self.sanalyzeRect.collidepoint(pygame.mouse.get_pos()):
@@ -557,13 +561,10 @@ class PygameGame(object):
         A=CInput('A')
         B=CInput('B')
         C=CInput('C')
-        cir5=XorGate(C,B,self.scXorGate)
-        cir1=AndGate(A,cir5,self.scAndGate)
-        cir45=NorGate(A,C,self.scNorGate)
-        cir21=AndGate(cir45,B,self.scAndGate)
-        cir2=OrGate(cir1,cir21,self.scOrGate)
+        cir1=OrGate(B,C,self.scOrGate)
+        cir2=AndGate(A,cir1,self.scAndGate)
         cir3=NotGate(B,self.scNotGate)
-        cir4=NandGate(cir3,cir2,self.scNandGate)
+        cir4=OrGate(cir2,cir3,self.scAndGate)
         return cir4
 
 def getCircuit():
