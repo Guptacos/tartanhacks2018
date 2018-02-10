@@ -30,18 +30,26 @@ def identify(image):
 
 #takes in a list of paths to photos including row/col index
 def images2Circ(photos):
+    #for p in photos:
+     #   print(identify(p))
+    rind = 8
+    cind = 10
     rows = 6
     cols = 8
     circuit = [[None for i in range(cols)] for j in range(rows)]
     for pic in photos:
-        row = int(pic[10])
-        col = int(pic[12])
+        row = int(pic[rind])
+        col = int(pic[cind])
         print(row,col)
         gate = identify(pic)
-        circuit[row][col] = gate
+        if gate == "Corner":
+            circuit[row][col] = None
+        else:
+            circuit[row][col] = gate
+    print(circuit)
     return circuit
 
 
-print(images2Circ(["pic/t3/aaa2a3.jpg","pic/t3/bbb1b4.jpg","pic/t3/ccc5c2.jpg","pic/t3/ddd5d5.jpg","pic/t3/eee0e0.jpg"]))
+#print(images2Circ(["pic/t3/aaa2a3.jpg","pic/t3/bbb1b4.jpg","pic/t3/ccc5c2.jpg","pic/t3/ddd5d5.jpg","pic/t3/eee0e0.jpg"]))
         
         
