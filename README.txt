@@ -56,7 +56,7 @@ qm_files                (Robert Dick)
     See README.txt and license within this folder for further information.
 
 equation_parse.py       (Logan Kojiro)
-    1) constructs a truth table for an equation
-    2) evaluates an equation given inputs
-
+    Given a boolean expression, and input values, evaluates the truth value 
+    of the expression.  Uses this to create a truth table for an arbitrary
+    boolean expression.
 
