@@ -276,7 +276,7 @@ class PygameGame(object):
         if self.analyze:
             if self.sanalyzeRect.collidepoint(x,y):
                 self.error=''
-                #circuit=getCircuit()
+                circuit=getCircuit()
                 # circuit=self.createCircuit()
                 # self.objList.append(circuit)
                 if circuit[1]=='':
