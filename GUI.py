@@ -542,6 +542,7 @@ class PygameGame(object):
         if isinstance(circuit,CInput):
             self.displayText(screen,circuit.name,self.inputFont,BLACK,center=(start[0]-8,start[1]))
         elif isinstance(circuit,Circuit):
+            self.getImage(circuit)
             gateWidth=circuit.image.get_width()
             gateHeight=circuit.image.get_height()
             if isinstance(circuit,NotGate):
@@ -565,6 +566,22 @@ class PygameGame(object):
         cir3=NotGate(B,self.scNotGate)
         cir4=AndGate(cir2,cir3,self.scAndGate)
         return cir4
+
+    def getImage(self,circuit):
+        if isinstance(circuit,AndGate):
+            circuit.image=self.scAndGate
+        elif isinstance(circuit,OrGate):
+            circuit.image=self.scOrGate
+        elif isinstance(circuit,NotGate):
+            circuit.image=self.scNotGate
+        elif isinstance(circuit,XorGate):
+            circuit.image=self.scXorGate
+        elif isinstance(circuit,NandGate):
+            circuit.image=self.scNandGate
+        elif isinstance(circuit,NorGate):
+            circuit.image=self.scNorGate
+        else:
+            raise Exception("Unknown Circuit")
 
 def getCircuit():
     get_img()
