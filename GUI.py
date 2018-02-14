@@ -34,6 +34,12 @@ class PygameGame(object):
         self.mode="Menu"
         self.analyze=False
         self.error=''
+        self.redd=random.choice([True,False])
+        self.blued=random.choice([True,False])
+        self.greend=random.choice([True,False])
+        self.red=random.randint(0,256)
+        self.blue=random.randint(0,256)
+        self.green=random.randint(0,256)
 
         #RECT COLORS
         self.titleRectColor=SOLID_YELLOW
@@ -217,17 +223,37 @@ class PygameGame(object):
         pass
 
     def menuTimerFired(self, dt):
-        color=self.titleRectColor
-        red=color[0]
-        green=color[1]
-        blue=color[2]
-        redr=random.randint(1,4)
-        greenr=random.randint(1,4)
-        bluer=random.randint(1,4)
-        red=(red+redr)%255
-        green=(green-greenr)%255
-        blue=(blue+bluer)%255
-        self.titleRectColor=red,green,blue
+        if self.redd:
+            self.red+=random.randint(1,8)
+            if self.red>=256:
+                self.red=255
+                self.redd=not self.redd
+        else:
+            self.red-=random.randint(1,8)
+            if self.red<0:
+                self.red=0
+                self.redd=not self.redd
+        if self.blued:
+            self.blue+=random.randint(1,8)
+            if self.blue>=256:
+                self.blue=255
+                self.blued=not self.blued
+        else:
+            self.blue-=random.randint(1,8)
+            if self.blue<0:
+                self.blue=0
+                self.blued=not self.blued
+        if self.greend:
+            self.green+=random.randint(1,8)
+            if self.green>=256:
+                self.green=255
+                self.greend=not self.greend
+        else:
+            self.green-=random.randint(1,8)
+            if self.green<0:
+                self.green=0
+                self.greend=not self.greend
+        self.titleRectColor=(self.red,self.blue,self.green)
 
     def menuRedrawAll(self, screen):
         screen.blit(self.scBackImage,(0,0))
@@ -266,9 +292,8 @@ class PygameGame(object):
     def liveMousePressed(self, x, y):
         if not self.analyze and self.analyzeRect.collidepoint(x,y):
             self.analyze=True
-            # circuit=self.createCircuit()
-            # self.objList.append(circuit)
-            circuit=getCircuit()
+            circuit=self.createCircuit()
+            #circuit=getCircuit()
             if circuit[1]=='':
                 self.objList.append(circuit[0])
             else:
@@ -276,9 +301,8 @@ class PygameGame(object):
         if self.analyze:
             if self.sanalyzeRect.collidepoint(x,y):
                 self.error=''
-                circuit=getCircuit()
-                # circuit=self.createCircuit()
-                # self.objList.append(circuit)
+                #circuit=getCircuit()
+                circuit=self.createCircuit()
                 if circuit[1]=='':
                     self.objList.pop()
                     self.objList.append(circuit[0])
@@ -338,7 +362,6 @@ class PygameGame(object):
                     self.displayText(screen,"Output",self.inputFont,BLACK,center=(start[0]+23,start[1]-6))
                 
                 self.displayText(screen,self.objList[0].userEq,self.inputFont,BLACK,center=(self.width*.2,self.height*.4))
-                #print(self.objList[0].get_qm())
                 self.displayText(screen,self.objList[0].get_qm(),self.inputFont,BLACK,center=(self.width*.6,self.height*.4))
 
                 if self.sanalyzeRect.collidepoint(pygame.mouse.get_pos()):
@@ -491,6 +514,7 @@ class PygameGame(object):
         if isinstance(circuit,CInput):
             self.displayText(screen,circuit.name,self.inputFont,BLACK,center=(start[0]-8,start[1]))
         elif isinstance(circuit,Circuit):
+            self.getImage(circuit)
             gateWidth=circuit.image.get_width()
             gateHeight=circuit.image.get_height()
             self.drawGate(screen,circuit,(start[0]-gateWidth,start[1]-gateHeight/2))
@@ -561,11 +585,11 @@ class PygameGame(object):
         A=CInput('A')
         B=CInput('B')
         C=CInput('C')
-        cir1=OrGate(B,C,self.scOrGate)
-        cir2=AndGate(A,cir1,self.scAndGate)
-        cir3=NotGate(B,self.scNotGate)
-        cir4=AndGate(cir2,cir3,self.scAndGate)
-        return cir4
+        cir1=OrGate(B,C)
+        cir2=AndGate(A,cir1)
+        cir3=NotGate(B)
+        cir4=AndGate(cir2,cir3)
+        return (cir4,"")
 
     def getImage(self,circuit):
         if isinstance(circuit,AndGate):

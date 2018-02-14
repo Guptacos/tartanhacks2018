@@ -5,13 +5,9 @@ sys.path.append(os.path.abspath("qm_files/"))
 from qm import *
 
 def getMin(ones):
-    print(ones)
     minterms = get_minterms(ones)
-    print(minterms)
     qmOutput = qm(minterms) #get minimized qm function from library
-    print(qmOutput)
     equation = convert(qmOutput)    #convert library output to work with eval
-    print(equation)
     return equation
 
 def get_minterms(ones):
